@@ -1,19 +1,5 @@
-Case #1: High: 8 Low: 2
-High: 8 Low: 1
-1.0000000000
-Case #2: High: 50 Low: 0
-High: 7 Low: 2
-0.8039215686
-Case #3: High: 8 Low: 5
-High: 8 Low: 2
-High: 8 Low: -1
-0.2500000000
-Case #4: High: 40 Low: 10
-High: 40 Low: 5
-High: 40 Low: 2
-0.0322580645
-Case #5: High: 10 Low: 1
-High: 11 Low: 2
-High: 12 Low: 3
-High: 13 Low: 4
-0.4000000000
+Case #1: 2
+Case #2: 1
+Case #3: 2
+Case #4: 3
+Case #5: 8
