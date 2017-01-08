@@ -35,7 +35,80 @@ void solve()
 	int x; cin >> x;
 	int y; cin >> y;
 	
+	/// Preliminary cases 
+	// If the p is zero, just output white
+	if(p == 0) { cout << "white" << endl; return; }
 	
+	// (50, 50) is valid
+	if(x == 50 && y == 50) { cout << "black" << endl; return; }
+	
+	// Calculate the distance between (x,y) and the center (50,50)
+	double distance = sqrt( pow(x-50, 2) + pow(y-50, 2) );
+	
+	// If the distance is bigger than 50, the point is never inside circle range
+	if(distance > 50) { cout << "white" << endl; return; }
+	
+	// Otherwise, this point is inside the circle's range.
+	
+	// Determine which quadrant the point is in. 
+	int quadrant = 0;
+	
+	if(x < 50 && y >= 50) { quadrant = 2; }
+	if(x < 50 && y < 50) { quadrant = 3; }
+	if(x >= 50 && y < 50) { quadrant = 4; }
+	if(x >= 50 && y >= 50) { quadrant = 1; }
+	
+	// Depending on the quadrant, calculate the degrees the point would be at if the circle
+	// were formed around it
+	double xydegrees = -1;
+	double a, b; // The adjusted point of (x,y) compared to the center for our triangle
+	double alpha; // The angle of our triangle in the quadrant, for height b, width a
+	
+	// Calculate the degrees.
+	// Quadrant one is top right.
+	if(quadrant == 1)
+		{
+		a = x - 50;
+		b = y - 50;
+		alpha = atan(b/a) * 180/pi;
+		xydegrees = 90-alpha;
+		}
+	// Quadrant 2 is top left.
+	if(quadrant == 2)
+		{
+		a = 50 - x;
+		b = y - 50;
+		alpha = atan(b/a) * 180/pi;
+		xydegrees = 270 + alpha;
+		}
+	// Quadrant 3 is bottom left.
+	if(quadrant == 3)
+		{
+		a = 50 - x;
+		b = 50 - y;
+		alpha = atan(b/a) * 180/pi;
+		xydegrees = 180 + (90 - alpha);
+		}
+	// Quadrant 4 is bottom right.		
+	if(quadrant == 4)
+		{
+		a = x - 50;
+		b = 50 - y;
+		alpha = atan(b/a) * 180/pi;
+		xydegrees = 90 + alpha;
+		}
+		
+	// Get the degrees our P suggests
+	double pAsDouble = p;
+	double pdegrees = (pAsDouble/100) * 360; // The relative percent * 360 degrees
+	
+	// Debug - output both degrees
+	//cout << "xydegrees: " << xydegrees << " pdegrees: " << pdegrees << endl;
+	
+	// If the point's degrees is bigger or equal to xydegrees, then it's in the circle
+	if(pdegrees >= xydegrees) { cout << "black" << endl; }
+	else { cout << "white" << endl; }
+		
 	}
 
 int main() 
