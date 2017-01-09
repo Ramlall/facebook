@@ -175,7 +175,7 @@ void solve()
 		double factor = 1/pow(y,x); // 1 over The number of possible states.
 		
 		// Make an array for the number of states per probability
-		int states[20*20 + 1] = {0};
+		int states[20*20+1] = {0};
 		// For example, 12 states if you roll 2 dice
 		GetStates(x, y, states);
 		
