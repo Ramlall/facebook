@@ -30,10 +30,9 @@ int bc(int n) { return n ? bc((n-1)&n)+1 : 0; }
 
 
 // Rolling a Y-sided die X times, what's the probability of the rolls adding up to W
-double GetProb(int x, int y, int w)
+double GetStates(int x, int y, int w)
 	{
 	double states = 0; // The number of states that add up to w.
-	double factor = 1/pow(y,x); // 1 over The number of possible states.
 	
 	// Find how many states add up to W. AKA...
 	// From range 1 to Y, choose X numbers that add up to W.
@@ -92,7 +91,7 @@ double GetProb(int x, int y, int w)
 	
 	//cout << states << endl;
 	
-	return states*factor;
+	return states;
 	}
 
 // Parse a spell (1d10+2) into the x, y, z and zmodifier referenced variables
@@ -177,13 +176,14 @@ void solve()
 		if (high < newh) { continue; } // Move on to next spell
 		
 		double prob = 0.0; // The probability this spell OTKs.
+		double factor = 1/pow(y,x); // 1 over The number of possible states.
 		
 		// The probability of this spell landing is the probability it hits for the range [hp, high]
 		// Find the probability of the dice rolling each number in this range
 		for(int j = newh; j <= high; j++)
 			{
 			// Get the probability the dice will roll to this number.
-			prob += GetProb(x, y, j);
+			prob += GetStates(x, y, j)*factor;
 			//cout << "Prob for (" << x << ", "<< y<< ", " << j << ") is " <<  prob << endl;
 			}
 		
