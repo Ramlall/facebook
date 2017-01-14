@@ -32,6 +32,7 @@ int bc(int n) { return n ? bc((n-1)&n)+1 : 0; }
 // Rolling a Y-sided die X times, what's the probability of the rolls adding up to W
 void GetStates(int x, int y, int (&states)[20*20+1])
 	{
+	cout << "Called GetStates for x: " << x << " y: " << y << endl;
 	// Fill up the states array
 	
 	// Find how many states add up to W. AKA...
@@ -84,7 +85,6 @@ void GetStates(int x, int y, int (&states)[20*20+1])
 		
 		// Incremenet the states box for this sum
 		states[sum] += 1; 
-		
 	
 	}}}}}}}}}}}}}}}}}}}}
 	
@@ -185,7 +185,7 @@ void solve()
 			{
 			// Get the probability the dice will roll to this number.
 			prob += states[j]*factor;
-			//cout << "Prob for (" << x << ", "<< y<< ", " << j << ") is " <<  prob << endl;
+			cout << "Prob for (" << x << ", "<< y<< ", " << j << ") is " <<  prob << endl;
 			}
 		
 		/// If that probability is better than our current bestSpellProbability, update it.
