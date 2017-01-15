@@ -85,7 +85,7 @@ int minDistance(int dist[], bool sptSet[])
    return min_index;
 }
 
-int dijk(int src, int b, vector< vector<int> > (&graph))
+int dijk(int src, int b, const vector< vector<int> > (&graph))
 	{
 	int V = k;
      int dist[V];     // The output array.  dist[i] will hold the shortest
@@ -96,7 +96,9 @@ int dijk(int src, int b, vector< vector<int> > (&graph))
   
      // Initialize all distances as INFINITE and stpSet[] as false
      for (int i = 0; i < V; i++)
+     	{
         dist[i] = INF, sptSet[i] = false;
+        }
   
      // Distance of source vertex from itself is always 0
      dist[src] = 0;
@@ -119,7 +121,7 @@ int dijk(int src, int b, vector< vector<int> > (&graph))
          // smaller than current value of dist[v]
          if (!sptSet[v] && graph[u][v] && dist[u] != INF 
                                        && dist[u]+graph[u][v] < dist[v])
-            dist[v] = dist[u] + graph[u][v];
+          {  dist[v] = dist[u] + graph[u][v]; }
      }
   
 	// Return distance
@@ -128,27 +130,53 @@ int dijk(int src, int b, vector< vector<int> > (&graph))
 
 
 // Recursive function to get minimum cost of gas for a destination D
+vector<int> MinDStorage;
 //int MinD(int (&adj)[][], vector<int> (&s), vector<int> (&d), int i)
-int MinD(vector< vector<int> > &adj, vector<int> (&s), vector<int> (&d), int i)
+int MinD(const vector< vector<int> > &adj, vector<int> (&s), vector<int> (&d), int i)
 	{
 	// Base cases
 	// First delivery min is town 1 to start 1, and start 1 to delivery 1
-	if(k == 0) { return dijk(0, s[0], adj) + dijk(s[0], d[0], adj); }
-	if(k == 1) 
+	if(i == 0) 
 		{ 
+		cout << "i: 0 min: " << dijk(0, s[0], adj) + dijk(s[0], d[0], adj) << endl;
+		return dijk(0, s[0], adj) + dijk(s[0], d[0], adj); 
+		}
+	if(i == 1) 
+		{ 
+		cout << "i: 0 min: " << min(dijk(0, s[0], adj) + dijk(s[0], d[0], adj) + dijk(d[0], s[1], adj) + dijk(s[1], d[1], adj), dijk(0, s[0], adj) + dijk(s[0], s[1], adj) + dijk(s[1], d[0], adj) + dijk(d[0], d[1], adj)) << endl;
 		return min(dijk(0, s[0], adj) + dijk(s[0], d[0], adj) + dijk(d[0], s[1], adj) + dijk(s[1], d[1], adj), dijk(0, s[0], adj) + dijk(s[0], s[1], adj) + dijk(s[1], d[0], adj) + dijk(d[0], d[1], adj)); 
 		}
 	
 	
-	int way1 = dijk(d[i-1], s[i], adj) + dijk(s[i], d[i], adj) + MinD(adj, s, d, i-1);
-	int way2 = dijk(d[i-2], s[i-1], adj) + dijk(s[i-1], s[i], adj) + dijk(s[i], d[i-1], adj) + dijk(d[i-1], d[i], adj) +   MinD(adj, s, d, i-2);
+	int dim1_si = dijk(d[i-1], s[i], adj);
+	int si_di = dijk(s[i], d[i], adj);
+	int MinDim1 = MinD(adj, s, d, i-1);
+	
+	int way1 = dim1_si + si_di + MinDim1;
+	
+	int dim2_sim1 = dijk(d[i-2], s[i-1], adj);
+	int sim1_si = dijk(s[i-1], s[i], adj);
+	int si_dim1 = dijk(s[i], d[i-1], adj);
+	int dim1_di = dijk(d[i-1], d[i], adj);
+	int MinDim2 = MinD(adj, s, d, i-2);
+	
+	int way2 = dim2_sim1 + sim1_si + si_dim1 + dim1_di + MinDim2;
 	int way3 = INF;
 	if(i != k) { way3 = dijk(d[i-1], s[i], adj) + dijk(s[i], s[i+1], adj) + dijk(s[i+1], d[i], adj) + MinD(adj, s, d, i-1); }
 	
-	// If all 3 ways are 0 or something, return -1.
-	if(way1 == 0 && way2 == 0 && way3 == 0) { return -1; }		
+	// The int we return
+	int re = min(min(way1, way2), way3);
 	
-	return min(min(way1, way2), way3);
+	// If all 3 ways are 0 or something, return -1.
+	if(way1 == 0 && way2 == 0) { re = 0; }	
+	
+	// Add this to MinDStorage if it's smaller.
+	//if(re < MinDStorage[i]) { MinDStorage[i] = re; }
+	
+	cout << "k: " << i << " min" <<  ": " << re << endl;
+		
+	// Return it.
+	return re;
 	}
 
 // This solve function gets called every test case. 
@@ -162,12 +190,13 @@ void solve()
 	
 	// Initialize an adjacency list to infinite
 	//int adj[V][V];
-	vector< vector<int> > adj(n);
+	vector< vector<int> > adj(n);//(n, vector<int>(n));
 	for(int i = 0; i < n; i++) 
 		{
-		adj[i] = vector<int>(n);
+		adj.push_back(vector<int>(n));
+		//adj[i] = vector<int>(n);
 	    	for(int j = 0; j < n; j++) 
-	    		{ adj[i][j] = 0; }
+	    		{ adj[i].push_back(0); }
 		}
 	
 	// Read input for roads in and add to adjacency list.
@@ -180,7 +209,7 @@ void solve()
 		}
 	
 	// Debug - output adj matrix
-	//cout << endl; for(int i = 0; i < n; i++) { for(int j = 0; j < n; j++) { cout << adj[i][j] << " "; } cout << endl; }
+	cout << endl; for(int i = 0; i < n; i++) { for(int j = 0; j < n; j++) { cout << adj[i][j] << " "; } cout << endl; }
 	
 	// Read input for deliveries into two vectors
 	vector<int> s(k);
@@ -193,6 +222,10 @@ void solve()
 		d.push_back(dd);
 		}
 	
+	// Initialize MinDStorage
+	for(int i = 0; i < n; i++)
+		{ MinDStorage.push_back(INF); }
+	
 	// The minimum we spend on gas.
 	int totalmin = INF;
 	
@@ -202,8 +235,14 @@ void solve()
 	// Find the total min by dynamic programming.
 	totalmin = MinD(adj, s, d, k);
 	
+	// Output Elements
+	//for(int i = 0; i < n; i++) { cout << MinDStorage[i] << endl; }
+	
 	// Output the min
 	cout << totalmin << endl;
+	
+	// Empty MinDStorage
+	MinDStorage.clear();
 	}
 
 // Main. Program starts here.
