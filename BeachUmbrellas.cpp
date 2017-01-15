@@ -30,6 +30,12 @@ int bc(int n) { return n ? bc((n-1)&n)+1 : 0; }
 // Linux command to run this: g++ BeachUmbrellas.cpp -o main
 
 
+/*
+Logic:
+0. Read input N, M. Read umbrella radiuses into an array.
+1. Try each umbrella as the first one.
+*/
+
 // This solve function gets called every test case. 
 // Output to cout the answer for just the case, no "Case #1: " stuff. (Include and end line.)
 void solve() 
@@ -39,11 +45,11 @@ void solve()
 	long n; cin >> m;
 	
 	// Get radiuses of the umbrellas. 
-	int radii[n];
+	int umbrellas[n];
 	for(int i = 0; i < n; i++)
 		{ 
 		int temp; cin >> temp;
-		radii[i] = temp; 
+		umbrellas[i] = temp; 
 		}
 	
 	// The number of ways we can arrange the umbrellas.

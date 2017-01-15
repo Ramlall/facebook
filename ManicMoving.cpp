@@ -28,12 +28,182 @@ int bc(int n) { return n ? bc((n-1)&n)+1 : 0; }
 // URL: https://www.facebook.com/hackercup/problem/300438463685411/
 // Linux command to run this: g++ ManicMoving.cpp -o main
 
+/*
+Logic:
+0. Read input N, M, K.
+1. Read the edges into an adjacency matrix.
+2. Read the deliveries into two arrays.
+*/
+
+/*
+// Thanks to Steven Hao for Dijkstra
+// Source: https://www.quora.com/What-is-the-most-simple-efficient-C++-code-for-Dijkstras-shortest-path-algorithm
+
+// given adjacency matrix adj, finds shortest path from A to B
+int dijk(int A, int B, vector< vector<int> > &adj) 
+	{
+	int n = adj.size();
+ 	vector<int> dist(n);
+  	vector<bool> vis(n);
+
+  	for(int i = 0; i < n; ++i) 
+  		{ dist[i] = INF; }
+  	dist[A] = 0;
+
+  	for(int i = 0; i < n; ++i) 
+  		{
+	    	int cur = -1;
+    		for(int j = 0; j < n; ++j) 
+    			{
+		      	if (vis[j]) continue;
+			if (cur == -1 || dist[j] < dist[cur]) { cur = j; }
+    			}
+
+	    	vis[cur] = true;
+    		for(int j = 0; j < n; ++j) 
+    			{
+		      	int path = dist[cur] + adj[cur][j];
+		      	if (path < dist[j]) { dist[j] = path; }
+    			}
+  		}
+
+	return dist[B];
+	}
+*/
+// Global so it's not annoying
+int k = 0;
+
+int minDistance(int dist[], bool sptSet[])
+{
+   // Initialize min value
+   int min = INF, min_index;
+  
+   for (int v = 0; v < k; v++)
+     if (sptSet[v] == false && dist[v] <= min)
+         min = dist[v], min_index = v;
+  
+   return min_index;
+}
+
+int dijk(int src, int b, vector< vector<int> > (&graph))
+	{
+	int V = k;
+     int dist[V];     // The output array.  dist[i] will hold the shortest
+                      // distance from src to i
+  
+     bool sptSet[V]; // sptSet[i] will true if vertex i is included in shortest
+                     // path tree or shortest distance from src to i is finalized
+  
+     // Initialize all distances as INFINITE and stpSet[] as false
+     for (int i = 0; i < V; i++)
+        dist[i] = INF, sptSet[i] = false;
+  
+     // Distance of source vertex from itself is always 0
+     dist[src] = 0;
+  
+     // Find shortest path for all vertices
+     for (int count = 0; count < V-1; count++)
+     {
+       // Pick the minimum distance vertex from the set of vertices not
+       // yet processed. u is always equal to src in first iteration.
+       int u = minDistance(dist, sptSet);
+  
+       // Mark the picked vertex as processed
+       sptSet[u] = true;
+  
+       // Update dist value of the adjacent vertices of the picked vertex.
+       for (int v = 0; v < V; v++)
+  
+         // Update dist[v] only if is not in sptSet, there is an edge from 
+         // u to v, and total weight of path from src to  v through u is 
+         // smaller than current value of dist[v]
+         if (!sptSet[v] && graph[u][v] && dist[u] != INF 
+                                       && dist[u]+graph[u][v] < dist[v])
+            dist[v] = dist[u] + graph[u][v];
+     }
+  
+	// Return distance
+	return dist[b];
+	}
+
+
+// Recursive function to get minimum cost of gas for a destination D
+//int MinD(int (&adj)[][], vector<int> (&s), vector<int> (&d), int i)
+int MinD(vector< vector<int> > &adj, vector<int> (&s), vector<int> (&d), int i)
+	{
+	// Base cases
+	// First delivery min is town 1 to start 1, and start 1 to delivery 1
+	if(k == 0) { return dijk(0, s[0], adj) + dijk(s[0], d[0], adj); }
+	if(k == 1) 
+		{ 
+		return min(dijk(0, s[0], adj) + dijk(s[0], d[0], adj) + dijk(d[0], s[1], adj) + dijk(s[1], d[1], adj), dijk(0, s[0], adj) + dijk(s[0], s[1], adj) + dijk(s[1], d[0], adj) + dijk(d[0], d[1], adj)); 
+		}
+	
+	
+	int way1 = dijk(d[i-1], s[i], adj) + dijk(s[i], d[i], adj) + MinD(adj, s, d, i-1);
+	int way2 = dijk(d[i-2], s[i-1], adj) + dijk(s[i-1], s[i], adj) + dijk(s[i], d[i-1], adj) + dijk(d[i-1], d[i], adj) +   MinD(adj, s, d, i-2);
+	int way3 = INF;
+	if(i != k) { way3 = dijk(d[i-1], s[i], adj) + dijk(s[i], s[i+1], adj) + dijk(s[i+1], d[i], adj) + MinD(adj, s, d, i-1); }
+	
+	// If all 3 ways are 0 or something, return -1.
+	if(way1 == 0 && way2 == 0 && way3 == 0) { return -1; }		
+	
+	return min(min(way1, way2), way3);
+	}
 
 // This solve function gets called every test case. 
 // Output to cout the answer for just the case, no "Case #1: " stuff. (Include and end line.)
 void solve() 
 	{
+	// Read input N M K
+	int n; cin >> n;
+	int m; cin >> m;
+	cin >> k;
 	
+	// Initialize an adjacency list to infinite
+	//int adj[V][V];
+	vector< vector<int> > adj(n);
+	for(int i = 0; i < n; i++) 
+		{
+		adj[i] = vector<int>(n);
+	    	for(int j = 0; j < n; j++) 
+	    		{ adj[i][j] = 0; }
+		}
+	
+	// Read input for roads in and add to adjacency list.
+	for(int i = 0; i < m; i++)
+		{
+		int a, b, g;
+		cin >> a >> b >> g;
+		adj[a-1][b-1] = g;
+		adj[b-1][a-1] = g;
+		}
+	
+	// Debug - output adj matrix
+	//cout << endl; for(int i = 0; i < n; i++) { for(int j = 0; j < n; j++) { cout << adj[i][j] << " "; } cout << endl; }
+	
+	// Read input for deliveries into two vectors
+	vector<int> s(k);
+	vector<int> d(k);
+	for(int i = 0; i < k; i++)
+		{
+		int ss, dd;
+		cin >> ss >> dd;
+		s.push_back(ss);
+		d.push_back(dd);
+		}
+	
+	// The minimum we spend on gas.
+	int totalmin = INF;
+	
+	// Debug - Test Dijkstra
+	//totalmin = dijk(0, 1, adj);
+	
+	// Find the total min by dynamic programming.
+	totalmin = MinD(adj, s, d, k);
+	
+	// Output the min
+	cout << totalmin << endl;
 	}
 
 // Main. Program starts here.

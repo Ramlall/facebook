@@ -28,6 +28,15 @@ int bc(int n) { return n ? bc((n-1)&n)+1 : 0; }
 // URL: https://www.facebook.com/hackercup/problem/235709883547573/
 // Linux command to run this: g++ FightingTheZombies.cpp -o main
 
+/*
+Logic:
+0. Read input N and R.
+1. Read input coordinate of each zombie.
+2. Go through each zombie and try each as each corner of the square. Pick the coordinate that encompasses the max zombies.
+3. Go through each non-square zombie. 
+	4. Go through each non-square zombie. 
+		5. Create a circle along this diameter. 
+*/
 
 // This solve function gets called every test case. 
 // Output to cout the answer for just the case, no "Case #1: " stuff. (Include and end line.)
@@ -40,16 +49,24 @@ void solve()
 	// Read each coordinate of the zombies.
 	long xs[n]; 
 	long ys[n];
+	bool insquare[n];
+	bool incircle[n];
 	for(int i = 0; i < n; i++)
 		{
 		long x; cin >> x;
 		long y; cin >> y;
 		xs[i] = x;
 		ys[i] = y;
+		insquare[i] = false;
+		incircle[i] = false;
 		}
 	
-	// The max number of zombies we can kill.	
-	int n = 0;
+	// Go through each zombie
+	for(int i = 0; i < n; i++)
+		{
+		// Try putting the zombie in each corner of the square.
+		}
+	
 	
 	// Output the number of zombies we can kill.
 	cout << n << endl;
